@@ -1,3 +1,7 @@
+# Helper function to parse a citekey of the form
+# nameYEARMMDDtitle
+# where YEARMMDD can sometimes be YYYY or YYYYMM
+
 import re
 
 def parseCitekey(strToParse):
