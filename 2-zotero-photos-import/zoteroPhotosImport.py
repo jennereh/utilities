@@ -38,16 +38,18 @@ mdTitleStr = ''
 
 # for every folder in the base_folder,
 # first change to that folder
-for f in foldersList:
+for fIdx, f in enumerate(foldersList):
   if f == 'albuminfo':
     continue
 
   os.chdir(base_folder+'/'+f)
   
-  # read in 'albuminfo'
+  # if albuminfo doesn't exist, assign the title 'Daily'
   if not os.path.exists('albuminfo'):
     print(f, "albuminfo doesn't exist")
+    mdTitleStr = 'Daily'
 
+  # if albuminfo exists, assign any vars that have data
   else:
     with open('albuminfo') as albumInfoFile:
       for line in albumInfoFile:
@@ -58,7 +60,27 @@ for f in foldersList:
         if 'title: ' in line:
             mdTitleStr = line.lstrip('title: ').rstrip('\n')
 
-  # build the date string from the filename
+  # assign any unassigned vars
+  if not mdTitleStr:
+    mdTitleStr = 'Daily'
+
+  if not mdPrevStr:
+    if fIdx > 0:
+      mdPrevStr = parseCitekey(foldersList[fIdx-1])['year']
+      mdPrevStr = datetime.strptime(mdPrevStr, '%Y%m%d')
+      mdPrevStr = mdPrevStr.strftime('%Y-%m-%d')
+    else:
+      mdPrevStr = "[[0000-00-00]]"
+
+  if not mdNextStr:
+    if fIdx > (len(foldersList)-1):
+      mdNextStr = parseCitekey(foldersList[fIdx+1])['year']
+      mdNextStr = datetime.strptime(mdNextStr, '%Y%m%d')
+      mdNextStr = mdNextStr.strftime('%Y-%m-%d')
+    else:
+      mdNextStr = "[[0000-00-00]]"
+
+  # build the md file's date string from the filename
   parsedDate = parseCitekey(f)['year']
   parsedDate = datetime.strptime(parsedDate, '%Y%m%d')
   mdFileDate = parsedDate.strftime('%Y-%m-%d')
