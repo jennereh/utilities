@@ -5,13 +5,17 @@
 # missing exif data goes to 'manual
 
 import os, glob, imghdr
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 def get_date_taken(path):
 
   try:
     exif = Image.open(path)._getexif()
   except AttributeError as e:
+    return 'FAIL'
+  except UnidentifiedImageError as e:
+    return 'FAIL'
+  except FileNotFoundError as e:
     return 'FAIL'
   else:
     if not exif:
@@ -69,7 +73,8 @@ for f in filesList:
 
   print(f"{newFileName} is ready to be moved")
 
-  # build the new folder's name from the exif data
+  # now figure out where to put the file
+  # build the destination folder's name from the exif data
   date = get_date_taken(newFileName)
   if date == 'FAIL':
     newFolderPath = dest_folder+'/'+fixme_folder
