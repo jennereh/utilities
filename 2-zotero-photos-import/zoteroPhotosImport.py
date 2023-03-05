@@ -36,9 +36,18 @@ mdPrevStr = ''
 mdNextStr = ''
 mdTitleStr = ''
 
+# uncomment to sort with a filter
+# or sort just by filename
+#foldersList.sort(key = lambda x: x.split('2006')[1])
+foldersList.sort()
+
 # for every folder in the base_folder,
 # first change to that folder
 for fIdx, f in enumerate(foldersList):
+  mdPrevStr = ''
+  mdNextStr = ''
+  mdTitleStr = ''
+
   if f == 'albuminfo':
     continue
 
@@ -68,25 +77,26 @@ for fIdx, f in enumerate(foldersList):
     if fIdx > 0:
       mdPrevStr = parseCitekey(foldersList[fIdx-1])['year']
       mdPrevStr = datetime.strptime(mdPrevStr, '%Y%m%d')
-      mdPrevStr = mdPrevStr.strftime('%Y-%m-%d')
+      mdPrevStr = f"{mdPrevStr.strftime('%Y-%m-%d')}"
     else:
-      mdPrevStr = "[[0000-00-00]]"
+      mdPrevStr = "0000-00-00"
 
   if not mdNextStr:
-    if fIdx > (len(foldersList)-1):
+    if fIdx < (len(foldersList)-1):
       mdNextStr = parseCitekey(foldersList[fIdx+1])['year']
       mdNextStr = datetime.strptime(mdNextStr, '%Y%m%d')
-      mdNextStr = mdNextStr.strftime('%Y-%m-%d')
+      mdNextStr = f"{mdNextStr.strftime('%Y-%m-%d')}"
     else:
-      mdNextStr = "[[0000-00-00]]"
+      mdNextStr = "0000-00-00"
 
   # build the md file's date string from the filename
   parsedDate = parseCitekey(f)['year']
   parsedDate = datetime.strptime(parsedDate, '%Y%m%d')
   mdFileDate = parsedDate.strftime('%Y-%m-%d')
+  mdFileYear = parsedDate.strftime('%Y')
 
   # get the markdown file full path so you can create it
-  mdFilePath = obsi_folder+'/journal/'+mdFileDate+'.md'
+  mdFilePath = f"{obsi_folder}/notes/Journal/{mdFileYear}/{mdFileDate}.md"
 
   # get the markdown file title
   # assign the abbreviated var for readabiity
@@ -145,7 +155,10 @@ for fIdx, f in enumerate(foldersList):
       # create the bibfile entry
       text = "@graphic{"+f"{pFileName}"+",\n"
       text = text + "  title = {"+f"{mdTitleStr} #{pFileName[-3:].lstrip('0')}"+"},\n"
-      text = text + "  author = {Hanni, Jenner},\n"
+      if 'hanni' in pFileName:
+        text = text + "  author = {Hanni, Jenner},\n"
+      elif 'minarik' in pFileName:
+        text = text + "  author = {Minarik, SSgt},\n"
       text = text + "  date = {" + f"{mdFileDate}" + "}\n"
       text = text + "  langid = {en},\n"
       text = text + "  file = {" + f"{dest_folder}/photos/{p}" + "}\n}\n\n"
