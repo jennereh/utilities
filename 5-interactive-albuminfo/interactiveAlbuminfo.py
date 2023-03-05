@@ -39,8 +39,28 @@ def printMenu(f, fObj):
   print("[x] everything looks good")
   print("--------------------------------------------\n")
 
-  fObj["title"] = "FOOOOO"
-
+  res = ""
+  while not res == "x":
+      res = input("Make a selection: ")
+      if res == "x": 
+        print("res is x")
+        return
+      elif res == "t":
+        fObj["title"] = input("Enter a new title: ").rstrip('\n')
+        printMenu(f, fObj)
+      elif res == "p":
+        fObj["prev"] = input("Enter a new prev (YYYY-MM-DD): ").rstrip('\n')
+        printMenu(f, fObj)
+      elif res == "n": 
+        fObj["next"] = input("Enter a new next (YYYY-MM-DD): ").rstrip('\n')
+        printMenu(f, fObj)
+      elif res == "o":
+        os.system(f"xed {f}/albuminfo")
+        print("Proceeding to the next item...")
+        break
+      else:
+        print("Not a valid selection. Try again.")
+        
 
 ## main
 
@@ -56,6 +76,7 @@ else:
 
 # get the list of folders
 foldersList = glob.glob("*", recursive=False)
+foldersList.sort()
 
 # inspect and get user input for each folder
 for f in foldersList:
@@ -73,16 +94,16 @@ for f in foldersList:
     if os.path.isfile(albuminfo_path):
         with open(albuminfo_path) as albuminfoFile:
             for line in albuminfoFile:
-                line = line.split(": ")
-                fObj[line[0]] = line[1]
+                line = line.split(":")
+                fObj[line[0]] = line[1].lstrip(' ').rstrip('\n')
 
     # update fObj with user input
     printMenu(f, fObj)
 
-#    # write out the updated fObj to albuminfo
-#    with open(albuminfo_path, "w") as albuminfoFile:
-#      for key in fObj:
-#        f.write(f"{key}: {fObj[key]}\n")
+    # write out the updated fObj to albuminfo
+    with open(albuminfo_path, "w") as albuminfoFile:
+      for key in fObj:
+        albuminfoFile.write(f"{key}: {fObj[key]}\n")
 
     del fObj
     
