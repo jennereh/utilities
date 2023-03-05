@@ -10,3 +10,5 @@ Data mangling, mostly.
 4. phone2folders processes iPhone photos and screenshots that have been moved to my laptop with Feem, converting the images from HEIC to JPG and sorting them into folders by date. [link](4-phone2folders)
 
 5. interactiveAlbuminfo iterates through a set of daily folders, prompting for a title and dates for the albuminfo file. This should make editing daily random photo entries easy enough to actually do it. [link](5-interactive-albuminfo)
+
+6. insertJournalPage inserts a page in the Journal section with nothing more than the date. [link](6-insert-journal-page)
